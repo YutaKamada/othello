@@ -1,8 +1,11 @@
+import _ from "lodash";
 import { useCallback } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
+import { BLACK, WHITE } from "../../../../constants/constants";
 import { boardAtom } from "../../../../recoil/boardAtom";
 import { boardEnableAtom } from "../../../../recoil/boardEnableAtom";
 import { warSituationAtom } from "../../../../recoil/warSituationAtom";
+import { turnOverStones } from "../../../utils/logic";
 
 export const useCellCallbacks = () => {
   const [boardState, setBoardState] = useRecoilState(boardAtom);
@@ -12,20 +15,33 @@ export const useCellCallbacks = () => {
   const [warSituation, setWarSituation] = useRecoilState(warSituationAtom);
 
   const clickCallbackFactory = useCallback(
-    (i: number, j: number) => {
-      const isEnable = boardEnableState[i][j];
-      if (!isEnable) return undefined;
-      return () => {
-        const newBoardState = { ...boardState };
-        console.log({ newBoardState, i, j, turn: warSituation.turn });
-        const targetRow = { ...newBoardState[i] };
-        targetRow[j] = warSituation.turn;
-        newBoardState[i] = targetRow;
+    (v: number, h: number) => {
+      const isEnable = boardEnableState[v][h];
+      const turn = warSituation.turn;
 
-        setBoardState(newBoardState);
+      if (!isEnable || turn === undefined) return undefined;
+      return () => {
+        const newBoardState = _.cloneDeep(boardState);
+
+        // クリック分の石を配置
+        newBoardState[v][h] = turn;
+
+        setBoardState(
+          turnOverStones({
+            boardState: newBoardState,
+            coordinate: { v, h },
+            turn,
+          })
+        );
+
+        // 白黒変更
+        setWarSituation((prev) => ({
+          ...prev,
+          turn: prev.turn === BLACK ? WHITE : BLACK,
+        }));
       };
     },
-    [boardState]
+    [boardState, warSituation]
   );
   return { clickCallbackFactory };
 };

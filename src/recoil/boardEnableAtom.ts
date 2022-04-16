@@ -1,8 +1,8 @@
-import { atom, AtomEffect, atomFamily, selectorFamily } from "recoil";
-import { BoardState } from "./boardAtom";
+import { atom, selectorFamily } from "recoil";
+import { Coordinate } from "./boardAtom";
 
 export interface BoardEnableState {
-  [key: string]: { [y: number]: boolean };
+  [v: string]: { [h: number]: boolean };
 }
 
 const INITIAL_BOARD_ENABLE_STATE: BoardEnableState = {
@@ -88,37 +88,20 @@ const INITIAL_BOARD_ENABLE_STATE: BoardEnableState = {
   },
 };
 
-const changeBoardStateEffect =
-  (boardState: BoardState): AtomEffect<BoardEnableState> =>
-  ({ onSet }) => {
-    onSet(() => {
-      // TODO: ここで変更処理
-      const length = Array.from({ length: 8 });
-      console.log("ugoita");
-      return Object.assign(
-        {},
-        length.map((_, i) => Object.assign(length.map((_, j) => true)))
-      );
-    });
-  };
-
 export const boardEnableAtom = atom<BoardEnableState>({
   key: "boardEnableState",
   default: INITIAL_BOARD_ENABLE_STATE,
 });
 
-export const getEnableCellState = selectorFamily<
-  boolean,
-  { i: number; j: number }
->({
+export const getEnableCellState = selectorFamily<boolean, Coordinate>({
   key: "getEnableCellStateSelector",
   get:
-    ({ i, j }) =>
+    ({ v, h }) =>
     ({ get }) => {
       // 盤内
-      if (0 <= i && i <= 8 && 0 <= j && j <= 8) {
+      if (0 <= v && v <= 7 && 0 <= h && h <= 7) {
         const val = get(boardEnableAtom);
-        return val[i][j];
+        return val[v][h];
       }
       return false;
     },

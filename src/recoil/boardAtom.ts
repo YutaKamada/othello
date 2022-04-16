@@ -1,10 +1,13 @@
 import { atom, selectorFamily } from "recoil";
 import { BLACK, WHITE } from "../constants/constants";
 
+// 盤目上の座標 (0 <= v(vertical) <= 8 , 0<= h(horizontal) <= 8)
+export type Coordinate = { v: number; h: number };
+
 export type StoneState = typeof BLACK | typeof WHITE | undefined;
 
 export interface BoardState {
-  [key: string]: { [y: number]: StoneState };
+  [v: number]: { [h: number]: StoneState };
 }
 
 export const INITIAL_BOARD_STATE: BoardState = {
@@ -95,18 +98,15 @@ export const boardAtom = atom<BoardState>({
   default: INITIAL_BOARD_STATE,
 });
 
-export const getStoneState = selectorFamily<
-  StoneState,
-  { i: number; j: number }
->({
+export const getStoneState = selectorFamily<StoneState, Coordinate>({
   key: "getStoneStateSelector",
   get:
-    ({ i, j }) =>
+    ({ v, h }) =>
     ({ get }) => {
       // 盤内
-      if (0 <= i && i <= 8 && 0 <= j && j <= 8) {
+      if (0 <= v && v <= 7 && 0 <= h && h <= 7) {
         const val = get(boardAtom);
-        return val[i][j];
+        return val[v][h];
       }
       return undefined;
     },
