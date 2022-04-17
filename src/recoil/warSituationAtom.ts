@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { BLACK } from "../constants/constants";
+import { BLACK } from "../constants/board";
 import { StoneState } from "./boardAtom";
 
 interface WarSituationState {

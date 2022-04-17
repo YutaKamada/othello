@@ -1,13 +1,18 @@
 import { Box } from "@mui/material";
 import React, { FC, useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { BLACK, CELL_STYLE } from "../../../constants/constants";
+import {
+  BLACK,
+  BLACK_IMAGE,
+  CELL_STYLE,
+  WHITE_IMAGE,
+} from "../../../constants/board";
 import {
   Coordinate,
-  getStoneState,
+  getCellStoneSelector,
   StoneState,
 } from "../../../recoil/boardAtom";
-import { getEnableCellState } from "../../../recoil/boardEnableAtom";
+import { getCellEnableSelector } from "../../../recoil/boardEnableAtom";
 import { warSituationAtom } from "../../../recoil/warSituationAtom";
 
 interface Props {
@@ -16,8 +21,8 @@ interface Props {
 }
 
 export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
-  const state = useRecoilValue(getStoneState(coordinate));
-  const enableStone = useRecoilValue(getEnableCellState(coordinate));
+  const state = useRecoilValue(getCellStoneSelector(coordinate));
+  const enableStone = useRecoilValue(getCellEnableSelector(coordinate));
   const { turn } = useRecoilValue(warSituationAtom);
   const enable = useMemo(
     () => enableStone !== undefined && enableStone === turn,
@@ -36,12 +41,15 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
       style={{ cursor: !state && enable ? "pointer" : "default" }}
     >
       <Stone stoneState={state} />
-      {enable ? <ShadowStone stoneState={turn} /> : null}
+      {enable ? <Stone stoneState={turn} opacity={0.2} /> : null}
     </Box>
   );
 });
 
-const Stone: FC<{ stoneState: StoneState }> = ({ stoneState }) => {
+const Stone: FC<{ stoneState: StoneState; opacity?: number }> = ({
+  stoneState,
+  opacity,
+}) => {
   if (stoneState === undefined) {
     return null;
   }
@@ -50,45 +58,19 @@ const Stone: FC<{ stoneState: StoneState }> = ({ stoneState }) => {
     <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
       {stoneState === BLACK ? (
         <img
-          src="/images/blackCat.png"
+          src={BLACK_IMAGE}
           alt="black stone"
           width={CELL_STYLE.width}
           height={CELL_STYLE.height}
+          style={{ opacity }}
         />
       ) : (
         <img
-          src="/images/whiteCat.png"
+          src={WHITE_IMAGE}
           alt="white stone"
           width={CELL_STYLE.width}
           height={CELL_STYLE.height}
-        />
-      )}
-    </Box>
-  );
-};
-
-const ShadowStone: FC<{ stoneState: StoneState }> = ({ stoneState }) => {
-  if (stoneState === undefined) {
-    return null;
-  }
-
-  return (
-    <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
-      {stoneState === BLACK ? (
-        <img
-          src="/images/blackCat.png"
-          alt="black stone"
-          width={CELL_STYLE.width}
-          height={CELL_STYLE.height}
-          style={{ opacity: 0.2 }}
-        />
-      ) : (
-        <img
-          src="/images/whiteCat.png"
-          alt="white stone"
-          width={CELL_STYLE.width}
-          height={CELL_STYLE.height}
-          style={{ opacity: 0.2 }}
+          style={{ opacity }}
         />
       )}
     </Box>

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { useCallback, useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { BLACK, WHITE } from "../../../../constants/constants";
+import { BLACK, WHITE } from "../../../../constants/board";
 import { boardAtom } from "../../../../recoil/boardAtom";
 import { boardEnableAtom } from "../../../../recoil/boardEnableAtom";
 import { warSituationAtom } from "../../../../recoil/warSituationAtom";

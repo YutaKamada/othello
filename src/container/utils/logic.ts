@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { BLACK, WHITE } from "../../constants/constants";
+import { BLACK, WHITE } from "../../constants/board";
 import { BoardState, Coordinate, KindOfStone } from "../../recoil/boardAtom";
-import { INITIAL_BOARD_ENABLE_STATE } from "../../recoil/boardEnableAtom";
+import { INITIAL_BOARD_ENABLE_STATE } from "../../constants/board";
 
 type Direction = Coordinate;
 
@@ -95,9 +95,7 @@ type EndType =
   | "EndFrame" // 枠端
   | "Empty" // 空
   | "SameColor"; // 同色;
-
 type ContinueType = "OtherColor"; // 異色
-
 type NextType = ContinueType | EndType;
 
 type TotalType = { black: Coordinate[]; white: Coordinate[] };

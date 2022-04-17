@@ -1,100 +1,16 @@
 import { atom, selectorFamily } from "recoil";
-import { Coordinate, StoneState } from "./boardAtom";
+import { INITIAL_BOARD_ENABLE_STATE } from "../constants/board";
+import { BoardState, Coordinate, StoneState } from "./boardAtom";
 
-export interface BoardEnableState {
-  [v: string]: { [h: number]: StoneState };
-}
-
-export const INITIAL_BOARD_ENABLE_STATE: BoardEnableState = {
-  0: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-  1: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-  2: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-  3: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-  4: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-  5: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-  6: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-  7: {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-  },
-};
+export type BoardEnableState = BoardState;
 
 export const boardEnableAtom = atom<BoardEnableState>({
   key: "boardEnableState",
   default: INITIAL_BOARD_ENABLE_STATE,
 });
 
-export const getEnableCellState = selectorFamily<StoneState, Coordinate>({
-  key: "getEnableCellStateSelector",
+export const getCellEnableSelector = selectorFamily<StoneState, Coordinate>({
+  key: "getCellEnableSelector",
   get:
     ({ v, h }) =>
     ({ get }) => {
