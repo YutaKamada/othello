@@ -39,12 +39,12 @@ export const useCellCallbacks = () => {
         }));
       };
     },
-    [boardState, warSituation, boardEnableState]
+    [boardState, warSituation, boardEnableState, setBoardState, setWarSituation]
   );
 
   useEffect(() => {
     setBoardEnableState(createEnableBoard(boardState));
-  }, [boardState]);
+  }, [boardState, setBoardEnableState]);
 
   return { clickCallbackFactory };
 };

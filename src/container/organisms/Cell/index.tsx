@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import React, { FC, useCallback, useMemo, useRef, useState } from "react";
+import React, { FC, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import { BLACK, CELL_STYLE } from "../../../constants/constants";
 import {
@@ -24,16 +24,6 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
     [turn, enableStone]
   );
 
-  const [isHover, setIsHover] = useState(false);
-  const mouseOver = useCallback(() => {
-    console.log({ coordinate, over: true });
-    setIsHover(true);
-  }, []);
-  const mouseLeave = useCallback(() => {
-    console.log({ coordinate, leave: true });
-    setIsHover(false);
-  }, []);
-
   return (
     <Box
       display="flex"
@@ -44,8 +34,6 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
       border="solid 1px"
       onClick={enable ? onClick : undefined}
       style={{ cursor: !state && enable ? "pointer" : "default" }}
-      onMouseEnter={mouseOver}
-      onMouseLeave={mouseLeave}
     >
       <Stone stoneState={state} />
       {enable ? <ShadowStone stoneState={turn} /> : null}

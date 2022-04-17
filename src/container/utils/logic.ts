@@ -1,6 +1,6 @@
-import _, { map } from "lodash";
+import _ from "lodash";
 import { BLACK, WHITE } from "../../constants/constants";
-import { KindOfStone, BoardState, Coordinate } from "../../recoil/boardAtom";
+import { BoardState, Coordinate, KindOfStone } from "../../recoil/boardAtom";
 import { INITIAL_BOARD_ENABLE_STATE } from "../../recoil/boardEnableAtom";
 
 type Direction = Coordinate;
