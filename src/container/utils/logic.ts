@@ -3,10 +3,10 @@ import { BLACK, WHITE } from "../../constants/board";
 import { BoardState, Coordinate, KindOfStone } from "../../recoil/boardAtom";
 import { INITIAL_BOARD_ENABLE_STATE } from "../../constants/board";
 
-type Direction = Coordinate;
+type Vector = Coordinate;
 
 // 検知用単位ベクトル
-const UNIT_VECTORS: readonly Direction[] = [
+const UNIT_VECTORS: readonly Vector[] = [
   { v: -1, h: -1 }, // 左上
   { v: 0, h: -1 }, // 左中
   { v: 1, h: -1 }, // 左下
@@ -17,50 +17,69 @@ const UNIT_VECTORS: readonly Direction[] = [
   { v: 1, h: 1 }, // 右下
 ];
 
-interface CheckTurnOverSet {
-  boardState: BoardState;
-  coordinate: Coordinate;
-  turn: KindOfStone;
-}
-
-export const turnOverStones = (checkTurnOverSet: CheckTurnOverSet) => {
-  const turnOverDirections = UNIT_VECTORS.map((d) => {
-    const tmpResults: Direction[] = [];
+/**
+ * 石を反転させる
+ * @param boardState 盤の状態
+ * @param coordinate 石がおかれた座標
+ * @param turn 現在のターン
+ * @returns
+ */
+export const turnOverStones = (
+  boardState: BoardState,
+  coordinate: Coordinate,
+  turn: KindOfStone
+) => {
+  const turnOverVectors = UNIT_VECTORS.map((d) => {
+    const turnOverVectors: Vector[] = [];
     const results = recursionCheckTurnOver(
-      checkTurnOverSet,
+      boardState,
+      coordinate,
+      turn,
       { ...d },
-      tmpResults,
+      turnOverVectors,
       d
     );
     return results;
   }).flat();
 
-  const nextBoardState = { ...checkTurnOverSet.boardState };
-  turnOverDirections.forEach((d) => {
-    const v = d.v + checkTurnOverSet.coordinate.v;
-    const h = d.h + checkTurnOverSet.coordinate.h;
+  const nextBoardState = { ...boardState };
+  // 現在の座標から ベクトル分だけ増加させた座標の石を反転させる
+  turnOverVectors.forEach((d) => {
+    const v = d.v + coordinate.v;
+    const h = d.h + coordinate.h;
 
-    nextBoardState[v][h] = checkTurnOverSet.turn;
+    nextBoardState[v][h] = turn;
   });
   return nextBoardState;
 };
 
-// TODO: 再帰関数で定義する
+/**
+ * 現在の座標から unitVector の方向に反転対象があるか再帰的に判定する
+ *
+ * @param boardState
+ * @param coordinate
+ * @param turn
+ * @param nowVector 現在のベクトル
+ * @param requiredTurnOverVectors 反転対象
+ * @param unitVector 方向単位ベクトル
+ * @returns
+ */
 const recursionCheckTurnOver = (
-  checkTurnOverSet: CheckTurnOverSet,
-  nowDiffDirection: Direction, //現在の差分方向
-  diffDirections: Direction[], // 今までの差分方向
-  checkDirection: Readonly<Direction> // 検査する方向
-): Direction[] => {
-  const { boardState, coordinate, turn } = checkTurnOverSet;
-  const checkResult = checkNextType(
+  boardState: BoardState,
+  coordinate: Coordinate,
+  turn: KindOfStone,
+  nowVector: Vector,
+  requiredTurnOverVectors: Vector[],
+  unitVector: Readonly<Vector>
+): Vector[] => {
+  const checkResult = checkCellStatus(
     boardState,
     { coordinate, color: turn },
-    nowDiffDirection
+    nowVector
   );
   switch (checkResult) {
     // 枠端 , 空
-    case "EndFrame":
+    case "OutOfFrame":
     case "Empty": {
       // 判定が途中で終了したため、色変更の必要なし
       return [];
@@ -68,40 +87,39 @@ const recursionCheckTurnOver = (
     // 同色
     case "SameColor": {
       // 今までの挟まれたものを返却
-      return diffDirections;
+      return requiredTurnOverVectors;
     }
     // 異色
     case "OtherColor": {
-      // resultsに変更の位置を追加して再度検査
-      diffDirections.push(nowDiffDirection);
+      requiredTurnOverVectors.push(nowVector);
     }
   }
 
   // 方向の値を加算して次の検査へ
   const nextDiffDirection = {
-    v: nowDiffDirection.v + checkDirection.v,
-    h: nowDiffDirection.h + checkDirection.h,
+    v: nowVector.v + unitVector.v,
+    h: nowVector.h + unitVector.h,
   };
 
   return recursionCheckTurnOver(
-    checkTurnOverSet,
+    boardState,
+    coordinate,
+    turn,
     nextDiffDirection,
-    diffDirections,
-    checkDirection
+    requiredTurnOverVectors,
+    unitVector
   );
 };
 
-type EndType =
-  | "EndFrame" // 枠端
-  | "Empty" // 空
-  | "SameColor"; // 同色;
-type ContinueType = "OtherColor"; // 異色
-type NextType = ContinueType | EndType;
-
 type TotalType = { black: Coordinate[]; white: Coordinate[] };
 
+/**
+ * 盤の状態から次に配置できる座標群を作成する
+ * @param boardState
+ * @returns
+ */
 export const createEnableBoard = (boardState: BoardState) => {
-  // 配置されているStone
+  // 配置されている石
   const stones: {
     coordinate: Coordinate;
     color: KindOfStone;
@@ -120,24 +138,26 @@ export const createEnableBoard = (boardState: BoardState) => {
   // 白黒ごとのEnableを出す
   const enableCoordinates = stones
     .map((stone) =>
-      UNIT_VECTORS.map((d) => {
-        const tmpResults: Direction[] = [];
-        const resultDirection = recursionCheckEnable(
-          boardState,
-          stone,
-          { ...d },
-          tmpResults,
-          d
-        );
-        if (resultDirection !== undefined) {
-          return {
-            v: stone.coordinate.v + resultDirection.v,
-            h: stone.coordinate.h + resultDirection.h,
-          };
-        }
-        return undefined;
-      })
+      UNIT_VECTORS
+        // 配置されている石から8方向に検査する
+        .map((d) => {
+          const tmpResults: Vector[] = [];
+          const resultDirection = recursionCheckEnable(
+            boardState,
+            stone,
+            { ...d },
+            tmpResults,
+            d
+          );
+          return resultDirection !== undefined
+            ? {
+                v: stone.coordinate.v + resultDirection.v,
+                h: stone.coordinate.h + resultDirection.h,
+              }
+            : undefined;
+        })
         .flat()
+        // TotalTypeに成形
         .reduce<TotalType>(
           (acc, cur) => {
             if (cur === undefined) return acc;
@@ -150,18 +170,16 @@ export const createEnableBoard = (boardState: BoardState) => {
           { black: [], white: [] }
         )
     )
+    // TotalTypeに成形
     .reduce<TotalType>(
-      (acc, cur) => {
-        return {
-          black: [...acc.black, ...cur.black],
-          white: [...acc.white, ...cur.white],
-        };
-      },
+      (acc, cur) => ({
+        black: [...acc.black, ...cur.black],
+        white: [...acc.white, ...cur.white],
+      }),
       { black: [], white: [] }
     );
 
   const initialBoardEnableState = _.cloneDeep(INITIAL_BOARD_ENABLE_STATE);
-  console.log({ initialBoardEnableState, enableCoordinates });
   enableCoordinates.black.forEach(
     (c) => (initialBoardEnableState[c.v][c.h] = BLACK)
   );
@@ -171,68 +189,89 @@ export const createEnableBoard = (boardState: BoardState) => {
   return initialBoardEnableState;
 };
 
-// TODO: 再帰関数で定義する
+/**
+ * 現在の座標から unitVector の方向に配置可能箇所があるか再帰的に判定する
+ * @param boardState
+ * @param stone
+ * @param nowVector
+ * @param checkedVectors
+ * @param unitVector
+ * @returns Vector: unitVector方向に nowVector だけ動かしたところに配置箇所あり
+ * 　　　　　undefined : unitVector方向に配置箇所なし
+ */
 const recursionCheckEnable = (
   boardState: BoardState,
   stone: {
     coordinate: Coordinate;
     color: KindOfStone;
   },
-  nowDiffDirection: Coordinate,
-  diffDirections: Direction[],
-  direction: Readonly<Direction>
-): Direction | undefined => {
-  const checkResult = checkNextType(boardState, stone, nowDiffDirection);
+  nowVector: Vector,
+  checkedVectors: Vector[],
+  unitVector: Readonly<Vector>
+): Vector | undefined => {
+  const checkResult = checkCellStatus(boardState, stone, nowVector);
   switch (checkResult) {
     // 枠端 , 同色
-    case "EndFrame":
+    case "OutOfFrame":
     case "SameColor": {
-      // 判定が途中で終了したため、この方向には設置可能なものはない
+      // 判定が途中で終了したため、この方向に配置可能箇所はない
       return undefined;
     }
     // 空
     case "Empty": {
-      // 異色のものが一つでもあれば現在の方向を返却（Enable な座標）
-      return diffDirections.length !== 0 ? nowDiffDirection : undefined;
+      // 異色（検査済み）のものが一つでもあれば、nowVectorが配置可能座標
+      return checkedVectors.length !== 0 ? nowVector : undefined;
     }
     // 異色
     case "OtherColor": {
-      // diffDirectionsに現在の位置を追加して再度検査
-      diffDirections.push(nowDiffDirection);
+      checkedVectors.push(nowVector);
     }
   }
 
-  // 方向の値を加算して次の検査へ
+  // 単位ベクトル値を加算して次の検査へ
   const nextDiffDirection = {
-    v: nowDiffDirection.v + direction.v,
-    h: nowDiffDirection.h + direction.h,
+    v: nowVector.v + unitVector.v,
+    h: nowVector.h + unitVector.h,
   };
 
   return recursionCheckEnable(
     boardState,
     stone,
     nextDiffDirection,
-    diffDirections,
-    direction
+    checkedVectors,
+    unitVector
   );
 };
 
-const checkNextType = (
+/** 検知後のタイプ */
+type CellStatusType =
+  | "OutOfFrame" // 枠外
+  | "Empty" // 空
+  | "SameColor" // 同色;
+  | "OtherColor"; // 異色
+/**
+ * 対象の石を基準に、checkVector 分だけ動かした後の盤上ではどの状態かを検査する
+ * @param boardState
+ * @param stoneStatus 対象の石の状態
+ * @param checkVector 検査方向
+ * @returns {@type CellStatusType}
+ */
+const checkCellStatus = (
   boardState: BoardState,
-  stone: {
+  stoneStatus: {
     coordinate: Coordinate;
     color: KindOfStone;
   },
-  checkDirection: Direction
-): NextType => {
-  const { coordinate, color } = stone;
+  checkVector: Vector
+): CellStatusType => {
+  const { coordinate, color } = stoneStatus;
   const target = {
-    v: coordinate.v + checkDirection.v,
-    h: coordinate.h + checkDirection.h,
+    v: coordinate.v + checkVector.v,
+    h: coordinate.h + checkVector.h,
   };
 
   if (checkOutOfFrame(target)) {
-    return "EndFrame";
+    return "OutOfFrame";
   }
 
   if (checkEmpty(target, boardState)) {
@@ -246,16 +285,32 @@ const checkNextType = (
   return "OtherColor";
 };
 
+/**
+ * 枠外検査
+ * @param target
+ * @returns
+ */
 const checkOutOfFrame = (target: Coordinate) =>
   !(0 <= target.v && target.v <= 7 && 0 <= target.h && target.h <= 7);
 
-const checkEmpty = (
-  target: Coordinate,
-  boardState: CheckTurnOverSet["boardState"]
-) => boardState[target.v][target.h] === undefined;
+/**
+ * 空検査
+ * @param target
+ * @param boardState
+ * @returns
+ */
+const checkEmpty = (target: Coordinate, boardState: BoardState) =>
+  boardState[target.v][target.h] === undefined;
 
+/**
+ * 同色検査
+ * @param target
+ * @param boardState
+ * @param ownColor
+ * @returns
+ */
 const checkSameColor = (
   target: Coordinate,
-  boardState: CheckTurnOverSet["boardState"],
-  turn: CheckTurnOverSet["turn"]
-) => boardState[target.v][target.h] === turn;
+  boardState: BoardState,
+  ownColor: KindOfStone
+) => boardState[target.v][target.h] === ownColor;

@@ -9,8 +9,11 @@ export const boardEnableAtom = atom<BoardEnableState>({
   default: INITIAL_BOARD_ENABLE_STATE,
 });
 
-export const getCellEnableSelector = selectorFamily<StoneState, Coordinate>({
-  key: "getCellEnableSelector",
+/**
+ * 盤上の座標からセルの配置できる石の状態を取得する
+ */
+export const enableCellSelector = selectorFamily<StoneState, Coordinate>({
+  key: "enableCellSelector",
   get:
     ({ v, h }) =>
     ({ get }) => {

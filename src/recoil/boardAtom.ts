@@ -1,5 +1,7 @@
-import { atom, selectorFamily } from "recoil";
+import { atom, DefaultValue, selector, selectorFamily } from "recoil";
 import { BLACK, INITIAL_BOARD_STATE, WHITE } from "../constants/board";
+import { createEnableBoard } from "../container/utils/logic";
+import { boardEnableAtom } from "./boardEnableAtom";
 
 // 盤目上の座標 (0 <= v(vertical) <= 8 , 0<= h(horizontal) <= 8)
 export type Coordinate = { v: number; h: number };
@@ -12,13 +14,29 @@ export interface BoardState {
   [v: number]: { [h: number]: StoneState };
 }
 
-export const boardAtom = atom<BoardState>({
+const boardAtom = atom<BoardState>({
   key: "BoardState",
   default: INITIAL_BOARD_STATE,
 });
 
-export const getCellStoneSelector = selectorFamily<StoneState, Coordinate>({
-  key: "getCellStoneSelector",
+export const boardSelector = selector<BoardState>({
+  key: "boardSelector",
+  get: ({ get }) => get(boardAtom),
+  set: ({ set }, newValue) => {
+    set<BoardState>(boardAtom, newValue);
+    if (newValue instanceof DefaultValue) {
+      return;
+    }
+    // EnableStateを更新
+    set<BoardState>(boardEnableAtom, createEnableBoard(newValue));
+  },
+});
+
+/**
+ * 盤上の座標からセルの状態を取得する
+ */
+export const cellSelector = selectorFamily<StoneState, Coordinate>({
+  key: "cellSelector",
   get:
     ({ v, h }) =>
     ({ get }) => {

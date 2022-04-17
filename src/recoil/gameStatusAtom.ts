@@ -2,12 +2,12 @@ import { atom } from "recoil";
 import { BLACK } from "../constants/board";
 import { StoneState } from "./boardAtom";
 
-interface WarSituationState {
+interface GameStatusState {
   turn: StoneState;
   winner: StoneState;
 }
 
-export const warSituationAtom = atom<WarSituationState>({
-  key: "warSituationState",
+export const gameStatusAtom = atom<GameStatusState>({
+  key: "gameStatusAtom",
   default: { turn: BLACK, winner: undefined },
 });
