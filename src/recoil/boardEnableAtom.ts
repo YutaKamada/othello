@@ -1,90 +1,90 @@
 import { atom, selectorFamily } from "recoil";
-import { Coordinate } from "./boardAtom";
+import { Coordinate, StoneState } from "./boardAtom";
 
 export interface BoardEnableState {
-  [v: string]: { [h: number]: boolean };
+  [v: string]: { [h: number]: StoneState };
 }
 
-const INITIAL_BOARD_ENABLE_STATE: BoardEnableState = {
+export const INITIAL_BOARD_ENABLE_STATE: BoardEnableState = {
   0: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
   1: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
   2: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
   3: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
   4: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
   5: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
   6: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
   7: {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
   },
 };
 
@@ -93,7 +93,7 @@ export const boardEnableAtom = atom<BoardEnableState>({
   default: INITIAL_BOARD_ENABLE_STATE,
 });
 
-export const getEnableCellState = selectorFamily<boolean, Coordinate>({
+export const getEnableCellState = selectorFamily<StoneState, Coordinate>({
   key: "getEnableCellStateSelector",
   get:
     ({ v, h }) =>
@@ -103,6 +103,6 @@ export const getEnableCellState = selectorFamily<boolean, Coordinate>({
         const val = get(boardEnableAtom);
         return val[v][h];
       }
-      return false;
+      return undefined;
     },
 });

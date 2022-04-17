@@ -1,9 +1,10 @@
 import { atom } from "recoil";
 import { BLACK, WHITE } from "../constants/constants";
+import { StoneState } from "./boardAtom";
 
 interface WarSituationState {
-  turn: typeof BLACK | typeof WHITE | undefined;
-  winner: typeof BLACK | typeof WHITE | undefined;
+  turn: StoneState;
+  winner: StoneState;
 }
 
 export const warSituationAtom = atom<WarSituationState>({

@@ -4,7 +4,9 @@ import { BLACK, WHITE } from "../constants/constants";
 // 盤目上の座標 (0 <= v(vertical) <= 8 , 0<= h(horizontal) <= 8)
 export type Coordinate = { v: number; h: number };
 
-export type StoneState = typeof BLACK | typeof WHITE | undefined;
+// Stoneの種類
+export type KindOfStone = typeof BLACK | typeof WHITE;
+export type StoneState = KindOfStone | undefined;
 
 export interface BoardState {
   [v: number]: { [h: number]: StoneState };
