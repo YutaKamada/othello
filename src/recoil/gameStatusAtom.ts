@@ -8,6 +8,6 @@ interface GameStatusState {
 }
 
 export const gameStatusAtom = atom<GameStatusState>({
-  key: "warSituationState",
+  key: "gameStatusAtom",
   default: { turn: BLACK, winner: undefined },
 });

@@ -11,12 +11,12 @@ export const useCellCallbacks = () => {
   const [boardState, setBoardState] = useRecoilState(boardSelector);
   const boardEnableState = useRecoilValue(boardEnableAtom);
 
-  const [warSituation, setWarSituation] = useRecoilState(gameStatusAtom);
+  const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
 
   const clickCallbackFactory = useCallback(
     (v: number, h: number) => {
       const isEnable = boardEnableState[v][h];
-      const turn = warSituation.turn;
+      const turn = gameStatus.turn;
 
       if (!isEnable || turn === undefined) return undefined;
       return () => {
@@ -32,13 +32,13 @@ export const useCellCallbacks = () => {
         setBoardState(turnOveredBoardState);
 
         // 白黒変更
-        setWarSituation((prev) => ({
+        setGameStatus((prev) => ({
           ...prev,
           turn: prev.turn === BLACK ? WHITE : BLACK,
         }));
       };
     },
-    [boardState, warSituation, boardEnableState, setBoardState, setWarSituation]
+    [boardState, gameStatus, boardEnableState, setBoardState, setGameStatus]
   );
 
   // NOTE: EnableStateを更新するために初回セットを行う
