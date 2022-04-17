@@ -38,7 +38,7 @@ export const useGameDetail = () => {
     };
   }, [boardEnableState]);
 
-  const pass = useMemo(() => {
+  const passCallback = useMemo(() => {
     const hasNoNextClickBlack = turn === BLACK && enableCounts.black === 0;
     const hasNoNextClickWhite = turn === WHITE && enableCounts.white === 0;
 
@@ -57,6 +57,6 @@ export const useGameDetail = () => {
     winner,
     points,
     enableCounts,
-    pass,
+    passCallback,
   };
 };

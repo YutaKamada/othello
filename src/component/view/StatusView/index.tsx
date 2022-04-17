@@ -12,8 +12,9 @@ export const StatusView: FC<StatusViewProps> = ({ black, white }) => {
     <Box>
       <Typography variant="h3">
         黒：
-        {Array.from({ length: black }).map((_) => (
+        {Array.from({ length: black }).map((_, i) => (
           <img
+            key={`b-count-${i}`}
             src={BLACK_IMAGE}
             alt="point of black cat"
             width={20}
@@ -24,8 +25,9 @@ export const StatusView: FC<StatusViewProps> = ({ black, white }) => {
 
       <Typography variant="h3">
         白：
-        {Array.from({ length: white }).map((_) => (
+        {Array.from({ length: white }).map((_, i) => (
           <img
+            key={`w-count-${i}`}
             src={WHITE_IMAGE}
             alt="point of white cat"
             width={20}

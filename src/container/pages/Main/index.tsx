@@ -6,19 +6,19 @@ import { Board } from "../../organisms/Board";
 import { useGameDetail } from "./hooks/useGameDetail";
 
 export const Main: FC = () => {
-  const { turn, points, pass } = useGameDetail();
+  const { turn, points, passCallback } = useGameDetail();
   return (
     <Grid container>
-      <Grid xs={12} display="flex" justifyContent="center" mb={5}>
+      <Grid item xs={12} display="flex" justifyContent="center" mb={5}>
         <Typography variant="h2">オセロ</Typography>
       </Grid>
-      <Grid xs={12} display="flex" justifyContent="center" mb={3}>
-        <TurnView turn={turn} passCallback={pass} />
+      <Grid item xs={12} display="flex" justifyContent="center" mb={3}>
+        <TurnView turn={turn} passCallback={passCallback} />
       </Grid>
-      <Grid md={12} lg={8} display="flex" justifyContent="center">
+      <Grid item md={12} lg={8} display="flex" justifyContent="center">
         <Board />
       </Grid>
-      <Grid md={12} lg={4} p={3}>
+      <Grid item md={12} lg={4} p={3}>
         <StatusView {...points} />
       </Grid>
     </Grid>
