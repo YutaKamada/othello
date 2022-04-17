@@ -25,11 +25,11 @@ export const useCellCallbacks = () => {
 
         // 追加の石を配置
         changedBoardState[v][h] = turn;
-        const turnOveredBoardState = turnOverStones({
-          boardState: changedBoardState,
-          coordinate: { v, h },
-          turn,
-        });
+        const turnOveredBoardState = turnOverStones(
+          changedBoardState,
+          { v, h },
+          turn
+        );
         setBoardState(turnOveredBoardState);
 
         // 白黒変更
