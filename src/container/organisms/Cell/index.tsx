@@ -13,7 +13,7 @@ import {
   StoneState,
 } from "../../../recoil/boardAtom";
 import { getCellEnableSelector } from "../../../recoil/boardEnableAtom";
-import { warSituationAtom } from "../../../recoil/warSituationAtom";
+import { gameStatusAtom } from "../../../recoil/gameStatusAtom";
 
 interface Props {
   coordinate: Coordinate;
@@ -21,9 +21,9 @@ interface Props {
 }
 
 export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
-  const state = useRecoilValue(getCellStoneSelector(coordinate));
+  const stone = useRecoilValue(getCellStoneSelector(coordinate));
   const enableStone = useRecoilValue(getCellEnableSelector(coordinate));
-  const { turn } = useRecoilValue(warSituationAtom);
+  const { turn } = useRecoilValue(gameStatusAtom);
   const enable = useMemo(
     () => enableStone !== undefined && enableStone === turn,
     [turn, enableStone]
@@ -38,9 +38,9 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
       height={CELL_STYLE.height}
       border="solid 1px"
       onClick={enable ? onClick : undefined}
-      style={{ cursor: !state && enable ? "pointer" : "default" }}
+      style={{ cursor: !stone && enable ? "pointer" : "default" }}
     >
-      <Stone stoneState={state} />
+      <Stone stoneState={stone} />
       {enable ? <Stone stoneState={turn} opacity={0.2} /> : null}
     </Box>
   );

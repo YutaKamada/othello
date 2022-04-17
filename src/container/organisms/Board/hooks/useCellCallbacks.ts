@@ -1,18 +1,17 @@
 import _ from "lodash";
 import { useCallback, useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { BLACK, WHITE } from "../../../../constants/board";
-import { boardAtom } from "../../../../recoil/boardAtom";
+import { boardSelector } from "../../../../recoil/boardAtom";
 import { boardEnableAtom } from "../../../../recoil/boardEnableAtom";
-import { warSituationAtom } from "../../../../recoil/warSituationAtom";
-import { createEnableBoard, turnOverStones } from "../../../utils/logic";
+import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
+import { turnOverStones } from "../../../utils/logic";
 
 export const useCellCallbacks = () => {
-  const [boardState, setBoardState] = useRecoilState(boardAtom);
-  const [boardEnableState, setBoardEnableState] =
-    useRecoilState(boardEnableAtom);
+  const [boardState, setBoardState] = useRecoilState(boardSelector);
+  const boardEnableState = useRecoilValue(boardEnableAtom);
 
-  const [warSituation, setWarSituation] = useRecoilState(warSituationAtom);
+  const [warSituation, setWarSituation] = useRecoilState(gameStatusAtom);
 
   const clickCallbackFactory = useCallback(
     (v: number, h: number) => {
@@ -42,9 +41,11 @@ export const useCellCallbacks = () => {
     [boardState, warSituation, boardEnableState, setBoardState, setWarSituation]
   );
 
+  // NOTE: EnableStateを更新するために初回セットを行う
   useEffect(() => {
-    setBoardEnableState(createEnableBoard(boardState));
-  }, [boardState, setBoardEnableState]);
+    setBoardState((prev) => prev);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { clickCallbackFactory };
 };

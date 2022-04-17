@@ -3,12 +3,10 @@ import { FC } from "react";
 import { StatusView } from "../../../component/view/StatusView";
 import { TurnView } from "../../../component/view/TurnView";
 import { Board } from "../../organisms/Board";
-import { useWarStatus } from "./hooks/useWarStatus";
+import { useGameDetail } from "./hooks/useGameDetail";
 
-interface PageProps {}
-
-export const Main: FC<PageProps> = () => {
-  const { turn, points, pass } = useWarStatus();
+export const Main: FC = () => {
+  const { turn, points, pass } = useGameDetail();
   return (
     <Grid container>
       <Grid xs={12} display="flex" justifyContent="center" mb={5}>

@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { BLACK, WHITE } from "../../../../constants/board";
-import { boardAtom, KindOfStone } from "../../../../recoil/boardAtom";
+import { boardSelector, KindOfStone } from "../../../../recoil/boardAtom";
 import { boardEnableAtom } from "../../../../recoil/boardEnableAtom";
-import { warSituationAtom } from "../../../../recoil/warSituationAtom";
+import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
 
-export const useWarStatus = () => {
-  const [warSituation, setWarSituation] = useRecoilState(warSituationAtom);
+export const useGameDetail = () => {
+  const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
 
-  const { turn, winner } = warSituation;
-  const boardState = useRecoilValue(boardAtom);
+  const { turn, winner } = gameStatus;
+  const boardState = useRecoilValue(boardSelector);
   const boardEnableState = useRecoilValue(boardEnableAtom);
 
   const points = useMemo(() => {
@@ -44,19 +44,13 @@ export const useWarStatus = () => {
 
     if (hasNoNextClickBlack || hasNoNextClickWhite) {
       return () => {
-        setWarSituation({
-          ...warSituation,
-          turn: warSituation.turn === BLACK ? WHITE : BLACK,
+        setGameStatus({
+          ...gameStatus,
+          turn: gameStatus.turn === BLACK ? WHITE : BLACK,
         });
       };
     }
-  }, [
-    enableCounts.black,
-    enableCounts.white,
-    setWarSituation,
-    turn,
-    warSituation,
-  ]);
+  }, [enableCounts.black, enableCounts.white, setGameStatus, turn, gameStatus]);
 
   return {
     turn,
