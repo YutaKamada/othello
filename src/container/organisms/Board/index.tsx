@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
-import React from "react";
-import { FC } from "react";
+import React, { FC } from "react";
 import { Cell } from "../Cell";
 import { useCellCallbacks } from "./hooks/useCellCallbacks";
 
