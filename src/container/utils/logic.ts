@@ -161,7 +161,6 @@ export const createEnableBoard = (boardState: BoardState) => {
     );
 
   const initialBoardEnableState = _.cloneDeep(INITIAL_BOARD_ENABLE_STATE);
-  console.log({ initialBoardEnableState, enableCoordinates });
   enableCoordinates.black.forEach(
     (c) => (initialBoardEnableState[c.v][c.h] = BLACK)
   );

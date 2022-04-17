@@ -2,7 +2,7 @@ import _ from "lodash";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { BLACK, WHITE } from "../../../../constants/board";
-import { boardSelector } from "../../../../recoil/boardAtom";
+import { boardSelector, Coordinate } from "../../../../recoil/boardAtom";
 import { boardEnableAtom } from "../../../../recoil/boardEnableAtom";
 import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
 import { turnOverStones } from "../../../utils/logic";
@@ -14,7 +14,8 @@ export const useCellCallbacks = () => {
   const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
 
   const clickCallbackFactory = useCallback(
-    (v: number, h: number) => {
+    (coordinate: Coordinate) => {
+      const { v, h } = coordinate;
       const isEnable = boardEnableState[v][h];
       const turn = gameStatus.turn;
 
@@ -22,7 +23,7 @@ export const useCellCallbacks = () => {
       return () => {
         const changedBoardState = _.cloneDeep(boardState);
 
-        // クリック分の石を配置
+        // 追加の石を配置
         changedBoardState[v][h] = turn;
         const turnOveredBoardState = turnOverStones({
           boardState: changedBoardState,

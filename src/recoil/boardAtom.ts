@@ -21,10 +21,7 @@ const boardAtom = atom<BoardState>({
 
 export const boardSelector = selector<BoardState>({
   key: "boardSelector",
-  get: ({ get }) => {
-    const boardState = get(boardAtom);
-    return boardState;
-  },
+  get: ({ get }) => get(boardAtom),
   set: ({ set }, newValue) => {
     set<BoardState>(boardAtom, newValue);
     if (newValue instanceof DefaultValue) {
@@ -35,8 +32,11 @@ export const boardSelector = selector<BoardState>({
   },
 });
 
-export const getCellStoneSelector = selectorFamily<StoneState, Coordinate>({
-  key: "getCellStoneSelector",
+/**
+ * 盤上の座標からセルの状態を取得する
+ */
+export const cellSelector = selectorFamily<StoneState, Coordinate>({
+  key: "cellSelector",
   get:
     ({ v, h }) =>
     ({ get }) => {

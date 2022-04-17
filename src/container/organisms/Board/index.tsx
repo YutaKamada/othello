@@ -7,7 +7,6 @@ import { useCellCallbacks } from "./hooks/useCellCallbacks";
 const LENGTH = Array.from({ length: 8 });
 
 const Board: FC = () => {
-  console.log("render");
   const { clickCallbackFactory } = useCellCallbacks();
   return (
     <Box>
@@ -17,7 +16,7 @@ const Board: FC = () => {
             <Box key={`c-hol-${h}`}>
               <Cell
                 coordinate={{ v, h }}
-                onClick={clickCallbackFactory(v, h)}
+                onClick={clickCallbackFactory({ v, h })}
               />
             </Box>
           ))}

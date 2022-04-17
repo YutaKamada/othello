@@ -9,10 +9,10 @@ import {
 } from "../../../constants/board";
 import {
   Coordinate,
-  getCellStoneSelector,
+  cellSelector,
   StoneState,
 } from "../../../recoil/boardAtom";
-import { getCellEnableSelector } from "../../../recoil/boardEnableAtom";
+import { enableCellSelector } from "../../../recoil/boardEnableAtom";
 import { gameStatusAtom } from "../../../recoil/gameStatusAtom";
 
 interface Props {
@@ -21,8 +21,8 @@ interface Props {
 }
 
 export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
-  const stone = useRecoilValue(getCellStoneSelector(coordinate));
-  const enableStone = useRecoilValue(getCellEnableSelector(coordinate));
+  const stone = useRecoilValue(cellSelector(coordinate));
+  const enableStone = useRecoilValue(enableCellSelector(coordinate));
   const { turn } = useRecoilValue(gameStatusAtom);
   const enable = useMemo(
     () => enableStone !== undefined && enableStone === turn,
