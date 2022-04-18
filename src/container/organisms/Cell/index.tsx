@@ -13,7 +13,7 @@ import {
   cellSelector,
   StoneState,
 } from "../../../recoil/boardAtom";
-import { enableCellSelector } from "../../../recoil/boardEnableAtom";
+import { canPutCellSelector } from "../../../recoil/canPutBoardAtom";
 import { gameStatusAtom } from "../../../recoil/gameStatusAtom";
 
 interface Props {
@@ -22,14 +22,14 @@ interface Props {
 }
 
 export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
-  const stone = useRecoilValue(cellSelector(coordinate));
-  const enableStone = useRecoilValue(enableCellSelector(coordinate));
+  const cellState = useRecoilValue(cellSelector(coordinate));
+  const canPutCellState = useRecoilValue(canPutCellSelector(coordinate));
   const { turn } = useRecoilValue(gameStatusAtom);
   const enable = useMemo(
     () =>
-      enableStone !== undefined &&
-      (enableStone === turn || enableStone === BOTH),
-    [turn, enableStone]
+      canPutCellState !== undefined &&
+      (canPutCellState === turn || canPutCellState === BOTH),
+    [turn, canPutCellState]
   );
 
   return (
@@ -41,9 +41,9 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
       height={CELL_STYLE.height}
       border="solid 1px"
       onClick={enable ? onClick : undefined}
-      style={{ cursor: !stone && enable ? "pointer" : "default" }}
+      style={{ cursor: !cellState && enable ? "pointer" : "default" }}
     >
-      <Stone stoneState={stone} />
+      <Stone stoneState={cellState} />
       {enable ? <Stone stoneState={turn} opacity={0.2} /> : null}
     </Box>
   );

@@ -1,5 +1,5 @@
 import { BoardState } from "../recoil/boardAtom";
-import { BoardEnableState } from "../recoil/boardEnableAtom";
+import { CanPutBoardState } from "../recoil/canPutBoardAtom";
 
 export const BLACK = "black" as const;
 export const WHITE = "white" as const;
@@ -97,7 +97,7 @@ export const INITIAL_BOARD_STATE: BoardState = {
   },
 };
 
-export const INITIAL_BOARD_ENABLE_STATE: BoardEnableState = {
+export const INITIAL_CAN_PUT_BOARD_STATE: CanPutBoardState = {
   0: {
     0: undefined,
     1: undefined,

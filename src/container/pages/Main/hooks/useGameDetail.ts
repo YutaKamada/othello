@@ -3,9 +3,9 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { BLACK, BOTH, WHITE } from "../../../../constants/board";
 import { boardSelector, KindOfStone } from "../../../../recoil/boardAtom";
 import {
-  boardEnableAtom,
-  EnableStoneState,
-} from "../../../../recoil/boardEnableAtom";
+  canPutBoardAtom,
+  CanPutStoneState,
+} from "../../../../recoil/canPutBoardAtom";
 import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
 
 export const useGameDetail = () => {
@@ -13,7 +13,7 @@ export const useGameDetail = () => {
 
   const { turn, winner } = gameStatus;
   const boardState = useRecoilValue(boardSelector);
-  const boardEnableState = useRecoilValue(boardEnableAtom);
+  const canPutBoardState = useRecoilValue(canPutBoardAtom);
 
   const points = useMemo(() => {
     const stones: KindOfStone[] = Object.entries(boardState)
@@ -28,26 +28,25 @@ export const useGameDetail = () => {
     };
   }, [boardState]);
 
-  const enableCounts = useMemo(() => {
-    const stones: EnableStoneState[] = Object.entries(boardEnableState)
+  const canPutCounts = useMemo(() => {
+    const canPutCellStates: CanPutStoneState[] = Object.entries(
+      canPutBoardState
+    )
       .map(([_, row]) =>
-        Object.entries(row).map(([_, stone]) => stone as EnableStoneState)
+        Object.entries(row).map(([_, stone]) => stone as CanPutStoneState)
       )
       .flat();
 
     return {
-      black: stones.filter((s) => s === BLACK || s === BOTH).length,
-      white: stones.filter((s) => s === WHITE || s === BOTH).length,
+      black: canPutCellStates.filter((s) => s === BLACK || s === BOTH).length,
+      white: canPutCellStates.filter((s) => s === WHITE || s === BOTH).length,
     };
-  }, [boardEnableState]);
+  }, [canPutBoardState]);
 
   const passCallback = useMemo(() => {
-    const disablePutBlack = enableCounts.black === 0;
-    const disablePutWhite = enableCounts.white === 0;
-
     if (
-      (turn === BLACK && disablePutBlack) ||
-      (turn === WHITE && disablePutWhite)
+      (turn === BLACK && canPutCounts.black === 0) ||
+      (turn === WHITE && canPutCounts.white === 0)
     ) {
       return () => {
         setGameStatus({
@@ -56,13 +55,13 @@ export const useGameDetail = () => {
         });
       };
     }
-  }, [enableCounts.black, enableCounts.white, setGameStatus, turn, gameStatus]);
+  }, [canPutCounts.black, canPutCounts.white, setGameStatus, turn, gameStatus]);
 
   return {
     turn,
     winner,
     points,
-    enableCounts,
+    canPutCounts,
     passCallback,
   };
 };

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { BLACK, BOTH, WHITE } from "../../constants/board";
 import { BoardState, Coordinate, KindOfStone } from "../../recoil/boardAtom";
-import { INITIAL_BOARD_ENABLE_STATE } from "../../constants/board";
+import { INITIAL_CAN_PUT_BOARD_STATE } from "../../constants/board";
 
 type Vector = Coordinate;
 
@@ -179,7 +179,7 @@ export const createEnableBoard = (boardState: BoardState) => {
       { black: [], white: [] }
     );
 
-  const initialBoardEnableState = _.cloneDeep(INITIAL_BOARD_ENABLE_STATE);
+  const initialBoardEnableState = _.cloneDeep(INITIAL_CAN_PUT_BOARD_STATE);
   enableCoordinates.black.forEach(
     (c) => (initialBoardEnableState[c.v][c.h] = BLACK)
   );
