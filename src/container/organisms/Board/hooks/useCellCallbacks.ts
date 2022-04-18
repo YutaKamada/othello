@@ -1,23 +1,21 @@
 import _ from "lodash";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { BLACK, WHITE } from "../../../../constants/board";
 import { boardSelector, Coordinate } from "../../../../recoil/boardAtom";
-import { boardEnableAtom } from "../../../../recoil/boardEnableAtom";
+import { canPutBoardAtom } from "../../../../recoil/canPutBoardAtom";
 import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
 import { turnOverStones } from "../../../utils/logic";
 
 export const useCellCallbacks = () => {
   const [boardState, setBoardState] = useRecoilState(boardSelector);
-  const boardEnableState = useRecoilValue(boardEnableAtom);
+  const canPutBoardState = useRecoilValue(canPutBoardAtom);
 
-  const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
+  const { turn } = useRecoilValue(gameStatusAtom);
 
   const clickCallbackFactory = useCallback(
     (coordinate: Coordinate) => {
       const { v, h } = coordinate;
-      const isEnable = boardEnableState[v][h];
-      const turn = gameStatus.turn;
+      const isEnable = canPutBoardState[v][h];
 
       if (!isEnable || turn === undefined) return undefined;
       return () => {
@@ -31,22 +29,10 @@ export const useCellCallbacks = () => {
           turn
         );
         setBoardState(turnOveredBoardState);
-
-        // 白黒変更
-        setGameStatus((prev) => ({
-          ...prev,
-          turn: prev.turn === BLACK ? WHITE : BLACK,
-        }));
       };
     },
-    [boardState, gameStatus, boardEnableState, setBoardState, setGameStatus]
+    [canPutBoardState, turn, boardState, setBoardState]
   );
-
-  // NOTE: EnableStateを更新するために初回セットを行う
-  useEffect(() => {
-    setBoardState((prev) => prev);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return { clickCallbackFactory };
 };

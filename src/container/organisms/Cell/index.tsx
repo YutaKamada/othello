@@ -4,6 +4,7 @@ import { useRecoilValue } from "recoil";
 import {
   BLACK,
   BLACK_IMAGE,
+  BOTH,
   CELL_STYLE,
   WHITE_IMAGE,
 } from "../../../constants/board";
@@ -12,7 +13,7 @@ import {
   cellSelector,
   StoneState,
 } from "../../../recoil/boardAtom";
-import { enableCellSelector } from "../../../recoil/boardEnableAtom";
+import { canPutCellSelector } from "../../../recoil/canPutBoardAtom";
 import { gameStatusAtom } from "../../../recoil/gameStatusAtom";
 
 interface Props {
@@ -21,12 +22,15 @@ interface Props {
 }
 
 export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
-  const stone = useRecoilValue(cellSelector(coordinate));
-  const enableStone = useRecoilValue(enableCellSelector(coordinate));
+  const cellState = useRecoilValue(cellSelector(coordinate));
+  const canPutCellState = useRecoilValue(canPutCellSelector(coordinate));
   const { turn } = useRecoilValue(gameStatusAtom);
-  const enable = useMemo(
-    () => enableStone !== undefined && enableStone === turn,
-    [turn, enableStone]
+
+  const canPut = useMemo(
+    () =>
+      canPutCellState !== undefined &&
+      (canPutCellState === turn || canPutCellState === BOTH),
+    [turn, canPutCellState]
   );
 
   return (
@@ -37,11 +41,11 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
       width={CELL_STYLE.width}
       height={CELL_STYLE.height}
       border="solid 1px"
-      onClick={enable ? onClick : undefined}
-      style={{ cursor: !stone && enable ? "pointer" : "default" }}
+      onClick={canPut ? onClick : undefined}
+      style={{ cursor: !cellState && canPut ? "pointer" : "default" }}
     >
-      <Stone stoneState={stone} />
-      {enable ? <Stone stoneState={turn} opacity={0.2} /> : null}
+      <Stone stoneState={cellState} />
+      {canPut ? <Stone stoneState={turn} opacity={0.2} /> : null}
     </Box>
   );
 });

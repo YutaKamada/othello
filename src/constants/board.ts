@@ -1,8 +1,10 @@
 import { BoardState } from "../recoil/boardAtom";
-import { BoardEnableState } from "../recoil/boardEnableAtom";
+import { CanPutBoardState } from "../recoil/canPutBoardAtom";
 
 export const BLACK = "black" as const;
 export const WHITE = "white" as const;
+export const BOTH = "both" as const;
+export const DRAW = "draw" as const;
 
 export const BLACK_IMAGE = "/images/blackCat.png";
 export const WHITE_IMAGE = "/images/whiteCat.png";
@@ -11,6 +13,11 @@ export const CELL_STYLE = {
   height: 100,
   width: 100,
   color: "#123456",
+};
+
+export const INITIAL_POINTS = {
+  black: 2,
+  white: 2,
 };
 
 export const INITIAL_BOARD_STATE: BoardState = {
@@ -96,7 +103,7 @@ export const INITIAL_BOARD_STATE: BoardState = {
   },
 };
 
-export const INITIAL_BOARD_ENABLE_STATE: BoardEnableState = {
+export const INITIAL_CAN_PUT_BOARD_STATE: CanPutBoardState = {
   0: {
     0: undefined,
     1: undefined,

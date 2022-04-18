@@ -1,18 +1,17 @@
 import { Box } from "@mui/material";
-import React from "react";
-import { FC } from "react";
+import React, { FC } from "react";
 import { Cell } from "../Cell";
 import { useCellCallbacks } from "./hooks/useCellCallbacks";
 
-const LENGTH = Array.from({ length: 8 });
+const BOARD_LENGTH = Array.from({ length: 8 });
 
-const Board: FC = () => {
+export const Board: FC = React.memo(() => {
   const { clickCallbackFactory } = useCellCallbacks();
   return (
     <Box>
-      {LENGTH.map((_, v) => (
+      {BOARD_LENGTH.map((_, v) => (
         <Box key={`c-ver-${v}`} display="flex">
-          {LENGTH.map((_, h) => (
+          {BOARD_LENGTH.map((_, h) => (
             <Box key={`c-hol-${h}`}>
               <Cell
                 coordinate={{ v, h }}
@@ -24,8 +23,4 @@ const Board: FC = () => {
       ))}
     </Box>
   );
-};
-
-const MemorizedBoard = React.memo(Board);
-
-export { MemorizedBoard as Board };
+});
