@@ -1,16 +1,7 @@
-import { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
-import {
-  BLACK,
-  BOTH,
-  INITIAL_BOARD_STATE,
-  WHITE,
-} from "../../../../constants/board";
+import { useCallback, useEffect, useMemo } from "react";
+import { useRecoilState } from "recoil";
+import { BLACK, INITIAL_BOARD_STATE, WHITE } from "../../../../constants/board";
 import { boardSelector } from "../../../../recoil/boardAtom";
-import {
-  canPutBoardAtom,
-  CanPutStoneState,
-} from "../../../../recoil/canPutBoardAtom";
 import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
 
 export const useGameCallbacks = () => {
@@ -18,25 +9,8 @@ export const useGameCallbacks = () => {
   const [_, setBoardState] = useRecoilState(boardSelector);
 
   const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
-  const resetGameStatus = useResetRecoilState(gameStatusAtom);
 
-  const { turn } = gameStatus;
-  const canPutBoardState = useRecoilValue(canPutBoardAtom);
-
-  const canPutCounts = useMemo(() => {
-    const canPutCellStates: CanPutStoneState[] = Object.entries(
-      canPutBoardState
-    )
-      .map(([_, row]) =>
-        Object.entries(row).map(([_, stone]) => stone as CanPutStoneState)
-      )
-      .flat();
-
-    return {
-      black: canPutCellStates.filter((s) => s === BLACK || s === BOTH).length,
-      white: canPutCellStates.filter((s) => s === WHITE || s === BOTH).length,
-    };
-  }, [canPutBoardState]);
+  const { turn, canPutCounts } = gameStatus;
 
   const passCallback = useMemo(() => {
     if (
@@ -54,8 +28,14 @@ export const useGameCallbacks = () => {
 
   const resetCallback = useCallback(() => {
     setBoardState(INITIAL_BOARD_STATE);
-    resetGameStatus();
-  }, [resetGameStatus, setBoardState]);
+    setGameStatus((prev) => ({ ...prev, turn: BLACK }));
+  }, [setGameStatus, setBoardState]);
+
+  // NOTE: 依存するステータスを更新するために初回セットを行う
+  useEffect(() => {
+    setBoardState((prev) => prev);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     passCallback,

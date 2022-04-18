@@ -1,11 +1,11 @@
 import { Grid, Typography } from "@mui/material";
 import React from "react";
 import { FC } from "react";
-import { StatusView } from "../../../component/view/StatusView";
-import { TurnView } from "../../../component/view/TurnView";
+import { StatusView } from "../../organisms/StatusView";
 import { Board } from "../../organisms/Board";
 import { ResultDialog } from "../../organisms/ResultDialog.tsx";
 import { useGameCallbacks } from "./hooks/useGameCallbacks";
+import { TurnView } from "../../organisms/TurnView";
 
 export const Main: FC = () => {
   const { passCallback, resetCallback } = useGameCallbacks();

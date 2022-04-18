@@ -25,7 +25,8 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
   const cellState = useRecoilValue(cellSelector(coordinate));
   const canPutCellState = useRecoilValue(canPutCellSelector(coordinate));
   const { turn } = useRecoilValue(gameStatusAtom);
-  const enable = useMemo(
+
+  const canPut = useMemo(
     () =>
       canPutCellState !== undefined &&
       (canPutCellState === turn || canPutCellState === BOTH),
@@ -40,11 +41,11 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
       width={CELL_STYLE.width}
       height={CELL_STYLE.height}
       border="solid 1px"
-      onClick={enable ? onClick : undefined}
-      style={{ cursor: !cellState && enable ? "pointer" : "default" }}
+      onClick={canPut ? onClick : undefined}
+      style={{ cursor: !cellState && canPut ? "pointer" : "default" }}
     >
       <Stone stoneState={cellState} />
-      {enable ? <Stone stoneState={turn} opacity={0.2} /> : null}
+      {canPut ? <Stone stoneState={turn} opacity={0.2} /> : null}
     </Box>
   );
 });
