@@ -6,7 +6,7 @@ import {
   INITIAL_BOARD_STATE,
   WHITE,
 } from "../constants/board";
-import { createEnableBoard } from "../container/utils/logic";
+import { createCanPutBoardState } from "../container/utils/logic";
 import {
   canPutBoardAtom,
   CanPutBoardState,
@@ -38,9 +38,12 @@ export const boardSelector = selector<BoardState>({
     if (newBoardState instanceof DefaultValue) {
       return;
     }
-    const newCanPutBoardState = createEnableBoard(newBoardState);
+    const newCanPutBoardState = createCanPutBoardState(newBoardState);
     // CanPutBoardStateを更新
-    set<CanPutBoardState>(canPutBoardAtom, createEnableBoard(newBoardState));
+    set<CanPutBoardState>(
+      canPutBoardAtom,
+      createCanPutBoardState(newBoardState)
+    );
 
     // GameStatus更新
     const points = calcPoints(newBoardState);

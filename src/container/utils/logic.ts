@@ -118,41 +118,37 @@ type TotalType = { black: Coordinate[]; white: Coordinate[] };
  * @param boardState
  * @returns
  */
-export const createEnableBoard = (boardState: BoardState) => {
+export const createCanPutBoardState = (boardState: BoardState) => {
   // 配置されている石
-  const stones: {
-    coordinate: Coordinate;
-    color: KindOfStone;
-  }[] = [];
-  for (const [v, row] of Object.entries(boardState)) {
-    for (const [h, stone] of Object.entries(row)) {
-      if (stone !== undefined) {
-        stones.push({
+  const stones = Object.entries(boardState)
+    .map(([v, row]) =>
+      Object.entries(row)
+        .filter(([_, stone]) => stone !== undefined)
+        .map(([h, stone]) => ({
           coordinate: { v: +v, h: +h },
           color: stone as KindOfStone,
-        });
-      }
-    }
-  }
+        }))
+    )
+    .flat();
 
-  // 白黒ごとのEnableを出す
-  const enableCoordinates = stones
+  // 白黒ごとの配置可能場所を出す
+  const canPutCoordinates = stones
     .map((stone) =>
       UNIT_VECTORS
         // 配置されている石から8方向に検査する
         .map((d) => {
           const tmpResults: Vector[] = [];
-          const resultDirection = recursionCheckEnable(
+          const resultVector = recursionCheckCanPut(
             boardState,
             stone,
             { ...d },
             tmpResults,
             d
           );
-          return resultDirection !== undefined
+          return resultVector !== undefined
             ? {
-                v: stone.coordinate.v + resultDirection.v,
-                h: stone.coordinate.h + resultDirection.h,
+                v: stone.coordinate.v + resultVector.v,
+                h: stone.coordinate.h + resultVector.h,
               }
             : undefined;
         })
@@ -179,20 +175,20 @@ export const createEnableBoard = (boardState: BoardState) => {
       { black: [], white: [] }
     );
 
-  const initialBoardEnableState = _.cloneDeep(INITIAL_CAN_PUT_BOARD_STATE);
-  enableCoordinates.black.forEach(
-    (c) => (initialBoardEnableState[c.v][c.h] = BLACK)
+  const initialCanPutBoardState = _.cloneDeep(INITIAL_CAN_PUT_BOARD_STATE);
+  canPutCoordinates.black.forEach(
+    (c) => (initialCanPutBoardState[c.v][c.h] = BLACK)
   );
-  enableCoordinates.white.forEach((c) => {
-    const prev = initialBoardEnableState[c.v][c.h];
+  canPutCoordinates.white.forEach((c) => {
+    const prev = initialCanPutBoardState[c.v][c.h];
     if (prev === BLACK) {
       // 黒も白もおける
-      initialBoardEnableState[c.v][c.h] = BOTH;
+      initialCanPutBoardState[c.v][c.h] = BOTH;
     } else {
-      initialBoardEnableState[c.v][c.h] = WHITE;
+      initialCanPutBoardState[c.v][c.h] = WHITE;
     }
   });
-  return initialBoardEnableState;
+  return initialCanPutBoardState;
 };
 
 /**
@@ -205,7 +201,7 @@ export const createEnableBoard = (boardState: BoardState) => {
  * @returns Vector: unitVector方向に nowVector だけ動かしたところに配置箇所あり
  * 　　　　　undefined : unitVector方向に配置箇所なし
  */
-const recursionCheckEnable = (
+const recursionCheckCanPut = (
   boardState: BoardState,
   stone: {
     coordinate: Coordinate;
@@ -240,7 +236,7 @@ const recursionCheckEnable = (
     h: nowVector.h + unitVector.h,
   };
 
-  return recursionCheckEnable(
+  return recursionCheckCanPut(
     boardState,
     stone,
     nextDiffDirection,
