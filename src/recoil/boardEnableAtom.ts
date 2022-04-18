@@ -1,8 +1,12 @@
 import { atom, selectorFamily } from "recoil";
-import { INITIAL_BOARD_ENABLE_STATE } from "../constants/board";
-import { BoardState, Coordinate, StoneState } from "./boardAtom";
+import { BOTH, INITIAL_BOARD_ENABLE_STATE } from "../constants/board";
+import { Coordinate, StoneState } from "./boardAtom";
 
-export type BoardEnableState = BoardState;
+export type EnableStoneState = StoneState | typeof BOTH;
+
+export interface BoardEnableState {
+  [v: number]: { [h: number]: EnableStoneState };
+}
 
 export const boardEnableAtom = atom<BoardEnableState>({
   key: "boardEnableState",
@@ -12,7 +16,7 @@ export const boardEnableAtom = atom<BoardEnableState>({
 /**
  * 盤上の座標からセルの配置できる石の状態を取得する
  */
-export const enableCellSelector = selectorFamily<StoneState, Coordinate>({
+export const enableCellSelector = selectorFamily<EnableStoneState, Coordinate>({
   key: "enableCellSelector",
   get:
     ({ v, h }) =>

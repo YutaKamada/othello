@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { BLACK, WHITE } from "../../constants/board";
+import { BLACK, BOTH, WHITE } from "../../constants/board";
 import { BoardState, Coordinate, KindOfStone } from "../../recoil/boardAtom";
 import { INITIAL_BOARD_ENABLE_STATE } from "../../constants/board";
 
@@ -183,9 +183,15 @@ export const createEnableBoard = (boardState: BoardState) => {
   enableCoordinates.black.forEach(
     (c) => (initialBoardEnableState[c.v][c.h] = BLACK)
   );
-  enableCoordinates.white.forEach(
-    (c) => (initialBoardEnableState[c.v][c.h] = WHITE)
-  );
+  enableCoordinates.white.forEach((c) => {
+    const prev = initialBoardEnableState[c.v][c.h];
+    if (prev === BLACK) {
+      // 黒も白もおける
+      initialBoardEnableState[c.v][c.h] = BOTH;
+    } else {
+      initialBoardEnableState[c.v][c.h] = WHITE;
+    }
+  });
   return initialBoardEnableState;
 };
 

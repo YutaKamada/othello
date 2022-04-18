@@ -4,6 +4,7 @@ import { useRecoilValue } from "recoil";
 import {
   BLACK,
   BLACK_IMAGE,
+  BOTH,
   CELL_STYLE,
   WHITE_IMAGE,
 } from "../../../constants/board";
@@ -25,7 +26,9 @@ export const Cell: FC<Props> = React.memo(({ coordinate, onClick }) => {
   const enableStone = useRecoilValue(enableCellSelector(coordinate));
   const { turn } = useRecoilValue(gameStatusAtom);
   const enable = useMemo(
-    () => enableStone !== undefined && enableStone === turn,
+    () =>
+      enableStone !== undefined &&
+      (enableStone === turn || enableStone === BOTH),
     [turn, enableStone]
   );
 

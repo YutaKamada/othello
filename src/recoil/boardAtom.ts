@@ -1,7 +1,7 @@
 import { atom, DefaultValue, selector, selectorFamily } from "recoil";
 import { BLACK, INITIAL_BOARD_STATE, WHITE } from "../constants/board";
 import { createEnableBoard } from "../container/utils/logic";
-import { boardEnableAtom } from "./boardEnableAtom";
+import { boardEnableAtom, BoardEnableState } from "./boardEnableAtom";
 
 // 盤目上の座標 (0 <= v(vertical) <= 8 , 0<= h(horizontal) <= 8)
 export type Coordinate = { v: number; h: number };
@@ -28,7 +28,7 @@ export const boardSelector = selector<BoardState>({
       return;
     }
     // EnableStateを更新
-    set<BoardState>(boardEnableAtom, createEnableBoard(newValue));
+    set<BoardEnableState>(boardEnableAtom, createEnableBoard(newValue));
   },
 });
 

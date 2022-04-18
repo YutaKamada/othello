@@ -1,8 +1,11 @@
 import { useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { BLACK, WHITE } from "../../../../constants/board";
+import { BLACK, BOTH, WHITE } from "../../../../constants/board";
 import { boardSelector, KindOfStone } from "../../../../recoil/boardAtom";
-import { boardEnableAtom } from "../../../../recoil/boardEnableAtom";
+import {
+  boardEnableAtom,
+  EnableStoneState,
+} from "../../../../recoil/boardEnableAtom";
 import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
 
 export const useGameDetail = () => {
@@ -26,23 +29,26 @@ export const useGameDetail = () => {
   }, [boardState]);
 
   const enableCounts = useMemo(() => {
-    const stones: KindOfStone[] = Object.entries(boardEnableState)
+    const stones: EnableStoneState[] = Object.entries(boardEnableState)
       .map(([_, row]) =>
-        Object.entries(row).map(([_, stone]) => stone as KindOfStone)
+        Object.entries(row).map(([_, stone]) => stone as EnableStoneState)
       )
       .flat();
 
     return {
-      black: stones.filter((s) => s === BLACK).length,
-      white: stones.filter((s) => s === WHITE).length,
+      black: stones.filter((s) => s === BLACK || s === BOTH).length,
+      white: stones.filter((s) => s === WHITE || s === BOTH).length,
     };
   }, [boardEnableState]);
 
   const passCallback = useMemo(() => {
-    const hasNoNextClickBlack = turn === BLACK && enableCounts.black === 0;
-    const hasNoNextClickWhite = turn === WHITE && enableCounts.white === 0;
+    const disablePutBlack = enableCounts.black === 0;
+    const disablePutWhite = enableCounts.white === 0;
 
-    if (hasNoNextClickBlack || hasNoNextClickWhite) {
+    if (
+      (turn === BLACK && disablePutBlack) ||
+      (turn === WHITE && disablePutWhite)
+    ) {
       return () => {
         setGameStatus({
           ...gameStatus,

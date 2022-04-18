@@ -3,6 +3,7 @@ import { BoardEnableState } from "../recoil/boardEnableAtom";
 
 export const BLACK = "black" as const;
 export const WHITE = "white" as const;
+export const BOTH = "both" as const;
 
 export const BLACK_IMAGE = "/images/blackCat.png";
 export const WHITE_IMAGE = "/images/whiteCat.png";
