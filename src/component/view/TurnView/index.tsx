@@ -1,19 +1,21 @@
 import { Box, Button, Typography } from "@mui/material";
-import { FC } from "react";
+import React, { FC } from "react";
+import { useRecoilValue } from "recoil";
 import {
   BLACK,
   BLACK_IMAGE,
   WHITE,
   WHITE_IMAGE,
 } from "../../../constants/board";
-import { StoneState } from "../../../recoil/boardAtom";
+import { gameStatusAtom } from "../../../recoil/gameStatusAtom";
 
 interface TurnViewProps {
-  turn: StoneState;
   passCallback: (() => void) | undefined;
 }
 
-export const TurnView: FC<TurnViewProps> = ({ turn, passCallback }) => {
+export const TurnView: FC<TurnViewProps> = React.memo(({ passCallback }) => {
+  const { turn } = useRecoilValue(gameStatusAtom);
+
   return (
     <Box display="flex" justifyContent="center">
       <Typography variant="h3">
@@ -54,4 +56,4 @@ export const TurnView: FC<TurnViewProps> = ({ turn, passCallback }) => {
       ) : null}
     </Box>
   );
-};
+});

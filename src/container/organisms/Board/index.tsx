@@ -5,7 +5,7 @@ import { useCellCallbacks } from "./hooks/useCellCallbacks";
 
 const BOARD_LENGTH = Array.from({ length: 8 });
 
-const Board: FC = () => {
+export const Board: FC = React.memo(() => {
   const { clickCallbackFactory } = useCellCallbacks();
   return (
     <Box>
@@ -23,8 +23,4 @@ const Board: FC = () => {
       ))}
     </Box>
   );
-};
-
-const MemorizedBoard = React.memo(Board);
-
-export { MemorizedBoard as Board };
+});

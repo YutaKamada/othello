@@ -1,32 +1,27 @@
-import { useMemo } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { BLACK, BOTH, WHITE } from "../../../../constants/board";
-import { boardSelector, KindOfStone } from "../../../../recoil/boardAtom";
+import { useCallback, useMemo } from "react";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
+import {
+  BLACK,
+  BOTH,
+  INITIAL_BOARD_STATE,
+  WHITE,
+} from "../../../../constants/board";
+import { boardSelector } from "../../../../recoil/boardAtom";
 import {
   canPutBoardAtom,
   CanPutStoneState,
 } from "../../../../recoil/canPutBoardAtom";
 import { gameStatusAtom } from "../../../../recoil/gameStatusAtom";
 
-export const useGameDetail = () => {
+export const useGameCallbacks = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setBoardState] = useRecoilState(boardSelector);
+
   const [gameStatus, setGameStatus] = useRecoilState(gameStatusAtom);
+  const resetGameStatus = useResetRecoilState(gameStatusAtom);
 
-  const { turn, winner } = gameStatus;
-  const boardState = useRecoilValue(boardSelector);
+  const { turn } = gameStatus;
   const canPutBoardState = useRecoilValue(canPutBoardAtom);
-
-  const points = useMemo(() => {
-    const stones: KindOfStone[] = Object.entries(boardState)
-      .map(([_, row]) =>
-        Object.entries(row).map(([_, stone]) => stone as KindOfStone)
-      )
-      .flat();
-
-    return {
-      black: stones.filter((s) => s === BLACK).length,
-      white: stones.filter((s) => s === WHITE).length,
-    };
-  }, [boardState]);
 
   const canPutCounts = useMemo(() => {
     const canPutCellStates: CanPutStoneState[] = Object.entries(
@@ -57,11 +52,13 @@ export const useGameDetail = () => {
     }
   }, [canPutCounts.black, canPutCounts.white, setGameStatus, turn, gameStatus]);
 
+  const resetCallback = useCallback(() => {
+    setBoardState(INITIAL_BOARD_STATE);
+    resetGameStatus();
+  }, [resetGameStatus, setBoardState]);
+
   return {
-    turn,
-    winner,
-    points,
-    canPutCounts,
     passCallback,
+    resetCallback,
   };
 };

@@ -14,6 +14,11 @@ export const CELL_STYLE = {
   color: "#123456",
 };
 
+export const INITIAL_POINTS = {
+  black: 2,
+  white: 2,
+};
+
 export const INITIAL_BOARD_STATE: BoardState = {
   0: {
     0: undefined,

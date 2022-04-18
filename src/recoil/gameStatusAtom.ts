@@ -1,13 +1,19 @@
 import { atom } from "recoil";
-import { BLACK } from "../constants/board";
-import { StoneState } from "./boardAtom";
+import { BLACK, INITIAL_POINTS } from "../constants/board";
+import { KindOfStone, StoneState } from "./boardAtom";
 
 interface GameStatusState {
   turn: StoneState;
-  winner: StoneState;
+  gameResult?: {
+    winner: KindOfStone;
+  };
+  points: {
+    black: number;
+    white: number;
+  };
 }
 
 export const gameStatusAtom = atom<GameStatusState>({
   key: "gameStatusAtom",
-  default: { turn: BLACK, winner: undefined },
+  default: { turn: BLACK, points: INITIAL_POINTS },
 });
